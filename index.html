@@ -1,126 +1,58 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cross-Talks - AI Voice & Text Translator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CrossTalks</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json" />
-  <!-- Transformers.js for browser-side AI processing -->
-  <script type="module">
-    import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2';
-    window.pipeline = pipeline;
-    env.allowLocalModels = false;
-  </script>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="brand">
-        <!-- Title First -->
-        <h1>Cross-Talks</h1>
-        <!-- Inline Chat SVG Logo (Positioned on the Right) -->
-        <svg class="brand-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 3C6.47715 3 2 6.58172 2 11C2 13.131 2.96162 15.0645 4.54228 16.5C4.3013 17.7202 3.63004 18.9953 2.5 20C4.375 20.25 6.625 19.625 8.16315 18.5707C9.36214 18.8475 10.6508 19 12 19C17.5228 19 22 15.4183 22 11C22 6.58172 17.5228 3 12 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M8 11H8.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M12 11H12.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M16 11H16.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
-      </div>
 
-      <div class="header-actions">
-        <!-- Theme Toggle Button -->
-        <button id="theme-toggle" class="theme-btn" aria-label="Toggle Theme">
-          <span id="theme-icon">🌙</span>
-        </button>
-        <span id="status-badge" class="badge online">Online Mode</span>
-      </div>
-    </header>
+  <header class="app-header">
+    <div class="app-title">Cross-Talks</div>
+    <div class="mode-badge">⚡ Online Mode</div>
+  </header>
 
-    <div class="translator-box">
-      <!-- Input Panel -->
-      <div class="panel">
+  <main class="translator-container">
+    <!-- Input Panel (Left) -->
+    <section class="panel input-panel">
+      <div class="panel-header">
+        <span class="panel-title">Source</span>
         <select id="source-lang">
-          <option value="en" selected>English</option>
-          <option value="es">Spanish (Español)</option>
-          <option value="fr">French (Français)</option>
-          <option value="de">German (Deutsch)</option>
-          <option value="zh">Chinese Mandarin (中文)</option>
-          <option value="hi">Hindi (हिन्दी)</option>
-          <option value="ne">Nepali (नेपाली)</option>
-          <option value="gu">Gujarati (ગુજરાતી)</option>
-          <option value="te">Telugu (తెలుగు)</option>
-          <option value="ta">Tamil (தமிழ்)</option>
-          <option value="bho">Bhojpuri (भोजपुरी)</option>
-          <option value="mai">Maithili (मैथिली)</option>
-          <option value="ar">Arabic (العربية)</option>
-          <option value="pt">Portuguese (Português)</option>
-          <option value="ru">Russian (Русский)</option>
-          <option value="ja">Japanese (日本語)</option>
-          <option value="ko">Korean (한국어)</option>
-          <option value="it">Italian (Italiano)</option>
-          <option value="tr">Turkish (Türkçe)</option>
-          <option value="nl">Dutch (Nederlands)</option>
-          <option value="pl">Polish (Polski)</option>
-          <option value="bn">Bengali (বাংলা)</option>
-          <option value="ur">Urdu (اردو)</option>
-          <option value="id">Indonesian (Bahasa Indonesia)</option>
-          <option value="vi">Vietnamese (Tiếng Việt)</option>
-          <option value="sw">Swahili (Kiswahili)</option>
-          <option value="ne">Nepali</option>
-          <option value="te">Telugu</option>
-          <option value="ta">Tamil</option>
-          <option value="ka">Kannada</option>
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="hi">Hindi</option>
         </select>
-        <textarea id="source-text" placeholder="Type or tap the mic to speak..."></textarea>
-        <div class="controls">
-          <button id="mic-btn">🎙️ Speak</button>
-          <button id="listen-src-btn">🔊 Listen</button>
-        </div>
       </div>
 
-      <!-- Output Panel -->
-      <div class="panel">
-        <select id="target-lang">
-          <option value="hi" selected>Hindi (हिन्दी)</option>
-          <option value="en">English</option>
-          <option value="es">Spanish (Español)</option>
-          <option value="fr">French (Français)</option>
-          <option value="de">German (Deutsch)</option>
-          <option value="zh">Chinese Mandarin (中文)</option>
-          <option value="ne">Nepali (नेपाली)</option>
-          <option value="gu">Gujarati (ગુજરાતી)</option>
-          <option value="te">Telugu (తెలుగు)</option>
-          <option value="ta">Tamil (தமிழ்)</option>
-          <option value="bho">Bhojpuri (भोजपुरी)</option>
-          <option value="mai">Maithili (मैथिली)</option>
-          <option value="ar">Arabic (العربية)</option>
-          <option value="pt">Portuguese (Português)</option>
-          <option value="ru">Russian (Русский)</option>
-          <option value="ja">Japanese (日本語)</option>
-          <option value="ko">Korean (한국어)</option>
-          <option value="it">Italian (Italiano)</option>
-          <option value="tr">Turkish (Türkçe)</option>
-          <option value="nl">Dutch (Nederlands)</option>
-          <option value="pl">Polish (Polski)</option>
-          <option value="bn">Bengali (বাংলা)</option>
-          <option value="ur">Urdu (اردو)</option>
-          <option value="id">Indonesian (Bahasa Indonesia)</option>
-          <option value="vi">Vietnamese (Tiếng Việt)</option>
-          <option value="sw">Swahili (Kiswahili)</option>
-          <option value="ne">Nepali</option>
-          <option value="te">Telugu</option>
-          <option value="ta">Tamil</option>
-          <option value="ka">Kannada</option>
-        </select>
-        <textarea id="target-text" readonly placeholder="Translation will appear here..."></textarea>
-        <div class="controls">
-          <button id="translate-btn">Translate</button>
-          <button id="listen-target-btn">🔊 Listen</button>
-        </div>
+      <textarea id="source-text" placeholder="Type or paste text to translate..."></textarea>
+
+      <div class="panel-footer">
+        <button id="mic-btn" class="btn btn-secondary">🎤 Speak</button>
+        <button id="translate-btn" class="btn">Translate</button>
       </div>
-    </div>
-  </div>
+    </section>
+
+    <!-- Output Panel (Right) -->
+    <section class="panel output-panel">
+      <div class="panel-header">
+        <span class="panel-title">Translation</span>
+        <select id="target-lang">
+          <option value="hi">Hindi</option>
+          <option value="es">Spanish</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
+      <div id="output-text" class="output-box">Translation will appear here...</div>
+
+      <div class="panel-footer">
+        <button id="listen-btn" class="btn btn-secondary">🔊 Listen</button>
+        <button id="copy-btn" class="btn btn-secondary">📋 Copy</button>
+      </div>
+    </section>
+  </main>
 
   <script src="app.js"></script>
 </body>
