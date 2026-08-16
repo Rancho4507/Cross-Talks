@@ -104,46 +104,24 @@ sourceText.addEventListener('keydown', (e) => {
 // --- 4. Speech to Text (Microphone Input) ---
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
+let recognition = null;
+let isRecognizing = false;
+
 if (SpeechRecognition) {
-  const recognition = new SpeechRecognition();
+  recognition = new SpeechRecognition();
   recognition.continuous = false;
   recognition.interimResults = false;
-  let isRecognizing = false;
 
-  micBtn.addEventListener('click', () => {
-    if (isRecognizing) {
-      recognition.stop();
-      return;
-    }
-
-    try {
-      const selectedLocale = SPEECH_LOCALES[sourceLang.value] || 'en-US';
-      recognition.lang = selectedLocale;
-      recognition.start();
-      isRecognizing = true;
-      micBtn.style.opacity = '0.7';
-      micBtn.innerHTML = '<span>🔴</span> Listening...';
-    } catch (err) {
-      console.error('Recognition start error:', err);
-      isRecognizing = false;
-      micBtn.innerHTML = '<span>🎤</span> Speak';
-    }
-  });
+  recognition.onstart = () => {
+    isRecognizing = true;
+    micBtn.style.opacity = '0.6';
+    micBtn.innerHTML = '<span>🔴</span> Listening...';
+  };
 
   recognition.onresult = (event) => {
     const transcript = event.results[0][0].transcript;
     sourceText.value = transcript;
     translateText();
-  };
-
-  recognition.onspeechend = () => {
-    recognition.stop();
-  };
-
-  recognition.onend = () => {
-    isRecognizing = false;
-    micBtn.style.opacity = '1';
-    micBtn.innerHTML = '<span>🎤</span> Speak';
   };
 
   recognition.onerror = (event) => {
@@ -152,81 +130,99 @@ if (SpeechRecognition) {
     micBtn.style.opacity = '1';
     micBtn.innerHTML = '<span>🎤</span> Speak';
     if (event.error === 'not-allowed') {
-      alert('Microphone access was denied. Please allow microphone permission in browser settings.');
+      alert('Microphone permission was denied. Please allow microphone access in your browser site settings.');
     }
   };
-} else {
-  micBtn.addEventListener('click', () => {
-    alert('Voice input is not supported in this browser. Please use Google Chrome or Edge.');
-  });
+
+  recognition.onend = () => {
+    isRecognizing = false;
+    micBtn.style.opacity = '1';
+    micBtn.innerHTML = '<span>🎤</span> Speak';
+  };
 }
 
-// --- 5. Robust Text to Speech (Listen Output) ---
-let availableVoices = [];
-
-function populateVoices() {
-  if (typeof window.speechSynthesis !== 'undefined') {
-    availableVoices = window.speechSynthesis.getVoices();
+micBtn.addEventListener('click', async () => {
+  if (!SpeechRecognition) {
+    alert('Voice recognition is not supported in this browser. Please use Chrome or Edge.');
+    return;
   }
-}
 
-populateVoices();
-if (typeof window.speechSynthesis !== 'undefined') {
-  window.speechSynthesis.onvoiceschanged = populateVoices;
-}
+  if (isRecognizing) {
+    recognition.stop();
+    return;
+  }
+
+  try {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+    }
+    
+    recognition.lang = SPEECH_LOCALES[sourceLang.value] || 'en-US';
+    recognition.start();
+  } catch (err) {
+    console.error('Microphone access error:', err);
+    alert('Microphone permission is required to use voice input.');
+    micBtn.style.opacity = '1';
+    micBtn.innerHTML = '<span>🎤</span> Speak';
+  }
+});
+
+// --- 5. Guaranteed Audio Output (TTS Stream + Native SpeechSynthesis Fallback) ---
+let activeAudio = null;
 
 listenBtn.addEventListener('click', () => {
   const text = outputText.textContent.trim();
-  
-  if (!text || text === 'Translation will appear here...' || text === 'Translating...' || text.startsWith('Error') || text.startsWith('Please enter')) {
+
+  if (!text || text === 'Translation will appear here...' || text === 'Translating...' || text.startsWith('Please enter') || text.startsWith('Error')) {
     return;
   }
 
-  if (!('speechSynthesis' in window)) {
-    alert('Audio playback is not supported on this browser.');
-    return;
+  if (activeAudio) {
+    activeAudio.pause();
+    activeAudio = null;
   }
-
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.resume();
-
-  const targetCode = targetLang.value;
-  const targetLocale = SPEECH_LOCALES[targetCode] || 'en-US';
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = targetLocale;
-  utterance.rate = 0.9;
-  utterance.pitch = 1.0;
-
-  if (availableVoices.length === 0) {
-    availableVoices = window.speechSynthesis.getVoices();
-  }
-
-  const matchedVoice = availableVoices.find(v => v.lang === targetLocale || v.lang.replace('_', '-') === targetLocale) 
-                    || availableVoices.find(v => v.lang.startsWith(targetCode));
-
-  if (matchedVoice) {
-    utterance.voice = matchedVoice;
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
   }
 
   listenBtn.style.opacity = '0.5';
   listenBtn.innerHTML = '<span>🔊</span> Playing...';
 
-  utterance.onend = () => {
-    listenBtn.style.opacity = '1';
-    listenBtn.innerHTML = '<span>🔊</span> Listen';
-  };
+  const toLang = targetLang.value;
 
-  utterance.onerror = (err) => {
-    console.error('SpeechSynthesis Playback Error:', err);
-    listenBtn.style.opacity = '1';
-    listenBtn.innerHTML = '<span>🔊</span> Listen';
-    window.speechSynthesis.resume();
-  };
+  const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${toLang}&client=tw-ob`;
+  const audio = new Audio(audioUrl);
+  activeAudio = audio;
 
-  setTimeout(() => {
-    window.speechSynthesis.speak(utterance);
-  }, 50);
+  audio.play()
+    .then(() => {
+      audio.onended = () => {
+        listenBtn.style.opacity = '1';
+        listenBtn.innerHTML = '<span>🔊</span> Listen';
+      };
+    })
+    .catch(() => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.resume();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = SPEECH_LOCALES[toLang] || 'en-US';
+        utterance.rate = 0.9;
+
+        utterance.onend = () => {
+          listenBtn.style.opacity = '1';
+          listenBtn.innerHTML = '<span>🔊</span> Listen';
+        };
+        utterance.onerror = () => {
+          listenBtn.style.opacity = '1';
+          listenBtn.innerHTML = '<span>🔊</span> Listen';
+        };
+
+        window.speechSynthesis.speak(utterance);
+      } else {
+        listenBtn.style.opacity = '1';
+        listenBtn.innerHTML = '<span>🔊</span> Listen';
+      }
+    });
 });
 
 // --- 6. Copy to Clipboard ---
