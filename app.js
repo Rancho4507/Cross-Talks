@@ -12,6 +12,16 @@ const themeIcon = document.getElementById('theme-icon');
 const networkBadge = document.getElementById('network-badge');
 const htmlRoot = document.documentElement;
 
+// --- Language Code to BCP-47 Speech Locale Mapping ---
+const SPEECH_LOCALES = {
+  en: 'en-US', hi: 'hi-IN', es: 'es-ES', zh: 'zh-CN', ar: 'ar-SA',
+  fr: 'fr-FR', bn: 'bn-IN', pt: 'pt-BR', ru: 'ru-RU', ur: 'ur-PK',
+  id: 'id-ID', de: 'de-DE', ja: 'ja-JP', mr: 'mr-IN', te: 'te-IN',
+  tr: 'tr-TR', ta: 'ta-IN', ko: 'ko-KR', vi: 'vi-VN', it: 'it-IT',
+  gu: 'gu-IN', pl: 'pl-PL', uk: 'uk-UA', kn: 'kn-IN', ml: 'ml-IN',
+  fa: 'fa-IR', th: 'th-TH', nl: 'nl-NL', pa: 'pa-IN', sw: 'sw-KE'
+};
+
 // --- 1. Theme Toggle & Persistence ---
 const savedTheme = localStorage.getItem('crosstalks-theme') || 'light';
 htmlRoot.setAttribute('data-theme', savedTheme);
@@ -43,7 +53,7 @@ window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 updateOnlineStatus();
 
-// --- 3. Translation Engine (Free API) ---
+// --- 3. Translation Engine ---
 async function translateText() {
   const text = sourceText.value.trim();
   if (!text) {
@@ -84,7 +94,6 @@ async function translateText() {
 
 translateBtn.addEventListener('click', translateText);
 
-// Optional: Press Enter (without Shift) in textarea to translate
 sourceText.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -92,19 +101,33 @@ sourceText.addEventListener('keydown', (e) => {
   }
 });
 
-// --- 4. Speech to Text (Microphone) ---
+// --- 4. Speech to Text (Microphone Input) ---
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if (SpeechRecognition) {
   const recognition = new SpeechRecognition();
   recognition.continuous = false;
   recognition.interimResults = false;
+  let isRecognizing = false;
 
   micBtn.addEventListener('click', () => {
-    recognition.lang = sourceLang.value;
-    recognition.start();
-    micBtn.style.opacity = '0.5';
-    micBtn.innerHTML = '<span>🔴</span> Listening...';
+    if (isRecognizing) {
+      recognition.stop();
+      return;
+    }
+
+    try {
+      const selectedLocale = SPEECH_LOCALES[sourceLang.value] || 'en-US';
+      recognition.lang = selectedLocale;
+      recognition.start();
+      isRecognizing = true;
+      micBtn.style.opacity = '0.7';
+      micBtn.innerHTML = '<span>🔴</span> Listening...';
+    } catch (err) {
+      console.error('Recognition start error:', err);
+      isRecognizing = false;
+      micBtn.innerHTML = '<span>🎤</span> Speak';
+    }
   });
 
   recognition.onresult = (event) => {
@@ -115,18 +138,26 @@ if (SpeechRecognition) {
 
   recognition.onspeechend = () => {
     recognition.stop();
+  };
+
+  recognition.onend = () => {
+    isRecognizing = false;
     micBtn.style.opacity = '1';
     micBtn.innerHTML = '<span>🎤</span> Speak';
   };
 
   recognition.onerror = (event) => {
-    console.error('Speech error:', event.error);
+    console.error('Speech Recognition Error:', event.error);
+    isRecognizing = false;
     micBtn.style.opacity = '1';
     micBtn.innerHTML = '<span>🎤</span> Speak';
+    if (event.error === 'not-allowed') {
+      alert('Microphone access was denied. Please allow microphone permission in browser settings.');
+    }
   };
 } else {
   micBtn.addEventListener('click', () => {
-    alert('Speech recognition is not supported in this browser.');
+    alert('Voice input is not supported in this browser. Please use Google Chrome or Edge.');
   });
 }
 
@@ -136,10 +167,35 @@ listenBtn.addEventListener('click', () => {
   if (!text || text === 'Translation will appear here...' || text === 'Translating...') return;
 
   window.speechSynthesis.cancel();
+
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = targetLang.value;
+  const targetLocale = SPEECH_LOCALES[targetLang.value] || 'en-US';
+  utterance.lang = targetLocale;
+  utterance.rate = 0.95;
+
+  const voices = window.speechSynthesis.getVoices();
+  const matchedVoice = voices.find(v => v.lang === targetLocale || v.lang.startsWith(targetLang.value));
+  if (matchedVoice) {
+    utterance.voice = matchedVoice;
+  }
+
+  listenBtn.style.opacity = '0.6';
+  utterance.onend = () => {
+    listenBtn.style.opacity = '1';
+  };
+  utterance.onerror = (err) => {
+    console.error('SpeechSynthesis Error:', err);
+    listenBtn.style.opacity = '1';
+  };
+
   window.speechSynthesis.speak(utterance);
 });
+
+if (typeof window.speechSynthesis !== 'undefined') {
+  window.speechSynthesis.onvoiceschanged = () => {
+    window.speechSynthesis.getVoices();
+  };
+}
 
 // --- 6. Copy to Clipboard ---
 copyBtn.addEventListener('click', async () => {
