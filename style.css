@@ -1,6 +1,5 @@
 /* Color Palette: #4A4A4A, #CBCBCB, #FFFFE3, #6D8196 */
 :root {
-  /* Core Swatches */
   --c-charcoal: #4A4A4A;
   --c-clay-grey: #CBCBCB;
   --c-warm-light: #FFFFE3;
@@ -9,15 +8,15 @@
   /* Light Theme (Default) */
   --bg-main: #CBCBCB;
   --card-bg: #CBCBCB;
-  --text-main: #2A2A2A;           /* High contrast dark text */
+  --text-main: #2A2A2A;
   --text-heading: #4A4A4A;
   --text-muted: #5C5C5C;
   --accent-blue: #6D8196;
   --accent-text: #FFFFE3;
   
-  /* Input & Output Box Styling (High Readability) */
-  --field-bg: #F4F4E8;            /* Tint of warm light for crisp contrast */
-  --field-text: #1F1F1F;          /* Deep solid text inside boxes */
+  /* Input & Output Box Styling */
+  --field-bg: #F4F4E8;
+  --field-text: #1F1F1F;
   --field-placeholder: #7A7A7A;
 
   /* Claymorphism 3D Shadows */
@@ -32,14 +31,14 @@
 [data-theme="dark"] {
   --bg-main: #23272C;
   --card-bg: #353B42;
-  --text-main: #FFFFE3;           /* Crisp light warm text */
+  --text-main: #FFFFE3;
   --text-heading: #FFFFE3;
   --text-muted: #CBCBCB;
   --accent-blue: #6D8196;
   --accent-text: #FFFFE3;
 
-  --field-bg: #1C2025;            /* Dark deep container for clear reading */
-  --field-text: #FFFFFF;          /* Pure white text */
+  --field-bg: #1C2025;
+  --field-text: #FFFFFF;
   --field-placeholder: #8C98A6;
 
   --clay-outer: 10px 10px 24px #14171A, -8px -8px 20px #424952;
@@ -68,10 +67,10 @@ body {
   padding: 1.25rem;
 }
 
-/* App Header */
+/* Header */
 .app-header {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1000px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -91,10 +90,9 @@ body {
   letter-spacing: -0.5px;
 }
 
-/* Unique Chat Logo (Right of Title) */
 .brand-logo {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   color: var(--c-slate-blue);
   filter: drop-shadow(1px 2px 3px rgba(0, 0, 0, 0.15));
 }
@@ -115,24 +113,24 @@ body {
   font-weight: 700;
 }
 
-/* Horizontal Side-by-Side Workspace */
+/* Balanced Horizontal Workspace */
 .translator-container {
   display: flex;
-  flex-direction: row; /* Horizontal split */
-  gap: 1.5rem;
+  flex-direction: row;
+  gap: 1rem;
   width: 100%;
-  max-width: 1100px;
-  height: 68vh;
-  min-height: 460px;
+  max-width: 1000px;
+  height: 420px;
+  max-height: 55vh;
 }
 
 /* 3D Clay Cards */
 .clay-card {
   flex: 1;
   background-color: var(--card-bg);
-  border-radius: 26px;
+  border-radius: 24px;
   box-shadow: var(--clay-outer), var(--clay-card-inset);
-  padding: 1.5rem;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
 }
@@ -141,32 +139,31 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .panel-title {
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--text-heading);
 }
 
-/* Language Dropdown Select */
 .clay-select {
   background: var(--card-bg);
   color: var(--text-heading);
   border: none;
   outline: none;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  padding: 0.5rem 0.9rem;
-  border-radius: 14px;
+  padding: 0.45rem 0.8rem;
+  border-radius: 12px;
   box-shadow: var(--clay-btn-outer), var(--clay-btn-inset);
   cursor: pointer;
 }
 
-/* High-Visibility Input & Output Areas */
+/* Text Input & Output Areas */
 .clay-input {
   flex: 1;
   width: 100%;
@@ -174,11 +171,11 @@ body {
   color: var(--field-text) !important;
   border: none;
   outline: none;
-  border-radius: 18px;
-  padding: 1.25rem;
-  font-size: 1.15rem;
+  border-radius: 16px;
+  padding: 1rem;
+  font-size: 1rem;
   font-weight: 500;
-  line-height: 1.6;
+  line-height: 1.5;
   resize: none;
   box-shadow: var(--clay-field-inset);
   overflow-y: auto;
@@ -194,13 +191,13 @@ body {
   word-break: break-word;
 }
 
-/* Footer Action Buttons */
+/* Action Controls */
 .panel-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 1rem;
-  gap: 0.75rem;
+  margin-top: 0.75rem;
+  gap: 0.5rem;
 }
 
 .clay-btn {
@@ -208,16 +205,16 @@ body {
   color: var(--text-heading);
   border: none;
   outline: none;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  padding: 0.7rem 1.3rem;
-  border-radius: 16px;
+  padding: 0.6rem 1.1rem;
+  border-radius: 14px;
   box-shadow: var(--clay-btn-outer), var(--clay-btn-inset);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
 }
 
 .clay-btn:hover {
@@ -230,9 +227,9 @@ body {
 }
 
 .theme-btn {
-  padding: 0.5rem 0.8rem;
+  padding: 0.45rem 0.75rem;
   border-radius: 50px;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
 }
 
 .btn-primary {
@@ -240,42 +237,42 @@ body {
   color: var(--accent-text);
 }
 
-/* Horizontal Layout Preservation on Mobile */
+/* Horizontal Responsive Adjustment on Phones */
 @media (max-width: 768px) {
   body {
     padding: 0.5rem;
   }
   .app-header {
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.5rem;
   }
   .app-title {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
   }
   .brand-logo {
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
   }
   .translator-container {
-    flex-direction: row; /* Strict horizontal split on mobile */
-    gap: 0.5rem;
-    height: 82vh;
+    gap: 0.4rem;
+    height: 360px;
+    max-height: 52vh;
   }
   .clay-card {
-    padding: 0.85rem;
-    border-radius: 18px;
+    padding: 0.75rem;
+    border-radius: 16px;
   }
   .clay-input {
-    padding: 0.85rem;
-    font-size: 0.95rem;
-    border-radius: 14px;
-  }
-  .clay-btn {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.82rem;
+    padding: 0.75rem;
+    font-size: 0.85rem;
     border-radius: 12px;
   }
+  .clay-btn {
+    padding: 0.45rem 0.65rem;
+    font-size: 0.75rem;
+    border-radius: 10px;
+  }
   .clay-select {
-    padding: 0.35rem 0.6rem;
-    font-size: 0.78rem;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.75rem;
   }
 }
