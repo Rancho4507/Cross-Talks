@@ -161,41 +161,73 @@ if (SpeechRecognition) {
   });
 }
 
-// --- 5. Text to Speech (Listen Output) ---
+// --- 5. Robust Text to Speech (Listen Output) ---
+let availableVoices = [];
+
+function populateVoices() {
+  if (typeof window.speechSynthesis !== 'undefined') {
+    availableVoices = window.speechSynthesis.getVoices();
+  }
+}
+
+populateVoices();
+if (typeof window.speechSynthesis !== 'undefined') {
+  window.speechSynthesis.onvoiceschanged = populateVoices;
+}
+
 listenBtn.addEventListener('click', () => {
-  const text = outputText.textContent;
-  if (!text || text === 'Translation will appear here...' || text === 'Translating...') return;
+  const text = outputText.textContent.trim();
+  
+  if (!text || text === 'Translation will appear here...' || text === 'Translating...' || text.startsWith('Error') || text.startsWith('Please enter')) {
+    return;
+  }
+
+  if (!('speechSynthesis' in window)) {
+    alert('Audio playback is not supported on this browser.');
+    return;
+  }
 
   window.speechSynthesis.cancel();
+  window.speechSynthesis.resume();
+
+  const targetCode = targetLang.value;
+  const targetLocale = SPEECH_LOCALES[targetCode] || 'en-US';
 
   const utterance = new SpeechSynthesisUtterance(text);
-  const targetLocale = SPEECH_LOCALES[targetLang.value] || 'en-US';
   utterance.lang = targetLocale;
-  utterance.rate = 0.95;
+  utterance.rate = 0.9;
+  utterance.pitch = 1.0;
 
-  const voices = window.speechSynthesis.getVoices();
-  const matchedVoice = voices.find(v => v.lang === targetLocale || v.lang.startsWith(targetLang.value));
+  if (availableVoices.length === 0) {
+    availableVoices = window.speechSynthesis.getVoices();
+  }
+
+  const matchedVoice = availableVoices.find(v => v.lang === targetLocale || v.lang.replace('_', '-') === targetLocale) 
+                    || availableVoices.find(v => v.lang.startsWith(targetCode));
+
   if (matchedVoice) {
     utterance.voice = matchedVoice;
   }
 
-  listenBtn.style.opacity = '0.6';
+  listenBtn.style.opacity = '0.5';
+  listenBtn.innerHTML = '<span>🔊</span> Playing...';
+
   utterance.onend = () => {
     listenBtn.style.opacity = '1';
+    listenBtn.innerHTML = '<span>🔊</span> Listen';
   };
+
   utterance.onerror = (err) => {
-    console.error('SpeechSynthesis Error:', err);
+    console.error('SpeechSynthesis Playback Error:', err);
     listenBtn.style.opacity = '1';
+    listenBtn.innerHTML = '<span>🔊</span> Listen';
+    window.speechSynthesis.resume();
   };
 
-  window.speechSynthesis.speak(utterance);
+  setTimeout(() => {
+    window.speechSynthesis.speak(utterance);
+  }, 50);
 });
-
-if (typeof window.speechSynthesis !== 'undefined') {
-  window.speechSynthesis.onvoiceschanged = () => {
-    window.speechSynthesis.getVoices();
-  };
-}
 
 // --- 6. Copy to Clipboard ---
 copyBtn.addEventListener('click', async () => {
