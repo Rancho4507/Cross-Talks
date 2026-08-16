@@ -1,31 +1,74 @@
+/* Color Palette: #4A4A4A, #CBCBCB, #FFFFE3, #6D8196 */
 :root {
-  --bg-slate: #909EAE;
-  --accent-blue: #5C8DC5;
-  --card-bg: #AD9E90;
-  --text-dark: #736F60;
-  --white: #ffffff;
-  --border-subtle: rgba(115, 111, 96, 0.18);
+  /* Core Swatches */
+  --c-charcoal: #4A4A4A;
+  --c-clay-grey: #CBCBCB;
+  --c-warm-light: #FFFFE3;
+  --c-slate-blue: #6D8196;
+
+  /* Light Theme (Default) */
+  --bg-main: #CBCBCB;
+  --card-bg: #CBCBCB;
+  --text-main: #2A2A2A;           /* High contrast dark text */
+  --text-heading: #4A4A4A;
+  --text-muted: #5C5C5C;
+  --accent-blue: #6D8196;
+  --accent-text: #FFFFE3;
+  
+  /* Input & Output Box Styling (High Readability) */
+  --field-bg: #F4F4E8;            /* Tint of warm light for crisp contrast */
+  --field-text: #1F1F1F;          /* Deep solid text inside boxes */
+  --field-placeholder: #7A7A7A;
+
+  /* Claymorphism 3D Shadows */
+  --clay-outer: 10px 10px 22px #a8a8a8, -10px -10px 22px var(--c-warm-light);
+  --clay-card-inset: inset 3px 3px 6px rgba(255, 255, 227, 0.8), inset -3px -3px 6px rgba(74, 74, 74, 0.2);
+  --clay-btn-outer: 5px 5px 12px #a8a8a8, -5px -5px 12px var(--c-warm-light);
+  --clay-btn-inset: inset 2px 2px 4px rgba(255, 255, 227, 0.9), inset -2px -2px 4px rgba(74, 74, 74, 0.25);
+  --clay-field-inset: inset 4px 4px 8px rgba(74, 74, 74, 0.25), inset -3px -3px 6px rgba(255, 255, 227, 0.9);
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --bg-main: #23272C;
+  --card-bg: #353B42;
+  --text-main: #FFFFE3;           /* Crisp light warm text */
+  --text-heading: #FFFFE3;
+  --text-muted: #CBCBCB;
+  --accent-blue: #6D8196;
+  --accent-text: #FFFFE3;
+
+  --field-bg: #1C2025;            /* Dark deep container for clear reading */
+  --field-text: #FFFFFF;          /* Pure white text */
+  --field-placeholder: #8C98A6;
+
+  --clay-outer: 10px 10px 24px #14171A, -8px -8px 20px #424952;
+  --clay-card-inset: inset 3px 3px 6px rgba(255, 255, 227, 0.15), inset -3px -3px 6px rgba(0, 0, 0, 0.5);
+  --clay-btn-outer: 5px 5px 12px #14171A, -4px -4px 10px #464F59;
+  --clay-btn-inset: inset 2px 2px 4px rgba(255, 255, 227, 0.2), inset -2px -2px 4px rgba(0, 0, 0, 0.4);
+  --clay-field-inset: inset 4px 4px 8px rgba(0, 0, 0, 0.6), inset -2px -2px 5px rgba(255, 255, 227, 0.08);
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg-slate);
-  color: var(--text-dark);
+  background-color: var(--bg-main);
+  color: var(--text-main);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 1.25rem;
 }
 
-/* Minimalist App Header */
+/* App Header */
 .app-header {
   width: 100%;
   max-width: 1100px;
@@ -33,46 +76,65 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.25rem;
-  padding: 0 0.5rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
 }
 
 .app-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--white);
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--text-heading);
   letter-spacing: -0.5px;
 }
 
-.mode-badge {
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--white);
-  padding: 0.35rem 0.85rem;
-  border-radius: 9999px;
-  font-size: 0.85rem;
-  font-weight: 500;
+/* Unique Chat Logo (Right of Title) */
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  color: var(--c-slate-blue);
+  filter: drop-shadow(1px 2px 3px rgba(0, 0, 0, 0.15));
 }
 
-/* Horizontal Side-by-Side Split Workspace */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.mode-badge {
+  background: var(--card-bg);
+  box-shadow: var(--clay-btn-outer), var(--clay-btn-inset);
+  color: var(--text-heading);
+  padding: 0.45rem 1rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* Horizontal Side-by-Side Workspace */
 .translator-container {
   display: flex;
-  flex-direction: row; /* Strict horizontal side-by-side */
-  gap: 1.25rem;
+  flex-direction: row; /* Horizontal split */
+  gap: 1.5rem;
   width: 100%;
   max-width: 1100px;
   height: 68vh;
-  min-height: 420px;
+  min-height: 460px;
 }
 
-/* Minimalist Split Cards */
-.panel {
+/* 3D Clay Cards */
+.clay-card {
   flex: 1;
-  background: var(--card-bg);
-  border-radius: 16px;
+  background-color: var(--card-bg);
+  border-radius: 26px;
+  box-shadow: var(--clay-outer), var(--clay-card-inset);
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 .panel-header {
@@ -80,111 +142,140 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--border-subtle);
 }
 
 .panel-title {
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 0.92rem;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--text-dark);
+  color: var(--text-heading);
 }
 
-/* Language Dropdowns */
-select {
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  padding: 0.4rem 0.8rem;
-  color: var(--text-dark);
-  font-size: 0.9rem;
-  font-weight: 500;
+/* Language Dropdown Select */
+.clay-select {
+  background: var(--card-bg);
+  color: var(--text-heading);
+  border: none;
   outline: none;
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 0.5rem 0.9rem;
+  border-radius: 14px;
+  box-shadow: var(--clay-btn-outer), var(--clay-btn-inset);
   cursor: pointer;
 }
 
-/* Text Areas (Input & Output) */
-textarea, .output-box {
+/* High-Visibility Input & Output Areas */
+.clay-input {
   flex: 1;
   width: 100%;
-  background: transparent;
+  background-color: var(--field-bg);
+  color: var(--field-text) !important;
   border: none;
   outline: none;
+  border-radius: 18px;
+  padding: 1.25rem;
   font-size: 1.15rem;
-  color: #2b2923;
+  font-weight: 500;
   line-height: 1.6;
   resize: none;
+  box-shadow: var(--clay-field-inset);
   overflow-y: auto;
 }
 
-textarea::placeholder {
-  color: rgba(115, 111, 96, 0.6);
+.clay-input::placeholder {
+  color: var(--field-placeholder) !important;
+  opacity: 1;
 }
 
-/* Action Bars / Controls */
+.output-box {
+  user-select: text;
+  word-break: break-word;
+}
+
+/* Footer Action Buttons */
 .panel-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-subtle);
+  margin-top: 1rem;
+  gap: 0.75rem;
 }
 
-/* Minimalist Action Buttons */
-.btn {
-  background: var(--accent-blue);
-  color: var(--white);
+.clay-btn {
+  background: var(--card-bg);
+  color: var(--text-heading);
   border: none;
   outline: none;
-  border-radius: 10px;
-  padding: 0.65rem 1.4rem;
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 0.7rem 1.3rem;
+  border-radius: 16px;
+  box-shadow: var(--clay-btn-outer), var(--clay-btn-inset);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  transition: opacity 0.2s ease;
+  justify-content: center;
+  gap: 0.45rem;
 }
 
-.btn:hover {
-  opacity: 0.9;
+.clay-btn:hover {
+  transform: translateY(-2px);
 }
 
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.4);
-  color: var(--text-dark);
+.clay-btn:active {
+  transform: translateY(1px);
+  box-shadow: var(--clay-field-inset);
 }
 
-/* Horizontal Preservation on Mobile */
+.theme-btn {
+  padding: 0.5rem 0.8rem;
+  border-radius: 50px;
+  font-size: 1.15rem;
+}
+
+.btn-primary {
+  background: var(--accent-blue);
+  color: var(--accent-text);
+}
+
+/* Horizontal Layout Preservation on Mobile */
 @media (max-width: 768px) {
   body {
     padding: 0.5rem;
   }
-
-  .translator-container {
-    flex-direction: row; /* Retains horizontal split on mobile */
-    gap: 0.5rem;
-    height: 78vh;
+  .app-header {
+    margin-bottom: 0.65rem;
   }
-
-  .panel {
-    padding: 1rem;
+  .app-title {
+    font-size: 1.25rem;
+  }
+  .brand-logo {
+    width: 26px;
+    height: 26px;
+  }
+  .translator-container {
+    flex-direction: row; /* Strict horizontal split on mobile */
+    gap: 0.5rem;
+    height: 82vh;
+  }
+  .clay-card {
+    padding: 0.85rem;
+    border-radius: 18px;
+  }
+  .clay-input {
+    padding: 0.85rem;
+    font-size: 0.95rem;
+    border-radius: 14px;
+  }
+  .clay-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.82rem;
     border-radius: 12px;
   }
-
-  .app-title {
-    font-size: 1.2rem;
-  }
-
-  textarea, .output-box {
-    font-size: 0.95rem;
-  }
-
-  .btn {
-    padding: 0.5rem 0.8rem;
-    font-size: 0.85rem;
+  .clay-select {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.78rem;
   }
 }

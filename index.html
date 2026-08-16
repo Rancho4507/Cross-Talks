@@ -1,57 +1,143 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CrossTalks</title>
-  <link rel="stylesheet" href="style.css?v=2" />
+  <title>CrossTalks - Global Voice & Text Translator</title>
+  <link rel="stylesheet" href="style.css?v=clay2" />
   <link rel="manifest" href="manifest.json" />
 </head>
 <body>
 
+  <!-- Top Header with Custom Logo and Theme Toggle -->
   <header class="app-header">
-    <div class="app-title">Cross-Talks</div>
-    <div class="mode-badge">⚡ Online Mode</div>
+    <div class="brand">
+      <h1 class="app-title">CrossTalks</h1>
+      <!-- Unique Dual-Bubble Chat Logo positioned to the right -->
+      <svg class="brand-logo" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="CrossTalks Logo">
+        <path d="M4 14C4 7.37 9.37 2 16 2h4c6.63 0 12 5.37 12 12 0 2.45-.73 4.73-2 6.64V26a2 2 0 0 1-3.2 1.6l-3.26-2.45A15.8 15.8 0 0 1 20 26c-6.63 0-12-5.37-12-12 0-.68.06-1.35.17-2H16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 18c0 4.42 3.58 8 8 8h1.2l3.2 2.4a1 1 0 0 0 1.6-.8v-2.32c1.23-1.4 2-3.2 2-5.28 0-4.42-3.58-8-8-8H12" fill="var(--accent-blue)" fill-opacity="0.35"/>
+        <circle cx="15" cy="14" r="1.5" fill="currentColor"/>
+        <circle cx="20" cy="14" r="1.5" fill="currentColor"/>
+        <circle cx="25" cy="14" r="1.5" fill="currentColor"/>
+      </svg>
+    </div>
+
+    <div class="header-actions">
+      <span class="mode-badge" id="network-badge">⚡ Online Mode</span>
+      <button id="theme-toggle" class="clay-btn theme-btn" aria-label="Toggle Theme">
+        <span id="theme-icon">🌙</span>
+      </button>
+    </div>
   </header>
 
+  <!-- Horizontal Side-by-Side Split Workspace -->
   <main class="translator-container">
-    <!-- Input Panel (Left) -->
-    <section class="panel input-panel">
+    
+    <!-- Source / Input Panel -->
+    <section class="clay-card panel">
       <div class="panel-header">
-        <span class="panel-title">Source</span>
-        <select id="source-lang">
-          <option value="en">English</option>
-          <option value="es">Spanish</option>
-          <option value="hi">Hindi</option>
-        </select>
+        <span class="panel-title">Source Text</span>
+        <div class="select-wrapper">
+          <select id="source-lang" class="clay-select">
+            <option value="en" selected>English</option>
+            <option value="hi">Hindi (हिन्दी)</option>
+            <option value="es">Spanish (Español)</option>
+            <option value="zh">Chinese (Mandarin)</option>
+            <option value="ar">Arabic (العربية)</option>
+            <option value="fr">French (Français)</option>
+            <option value="bn">Bengali (বাংলা)</option>
+            <option value="pt">Portuguese (Português)</option>
+            <option value="ru">Russian (Русский)</option>
+            <option value="ur">Urdu (اردو)</option>
+            <option value="id">Indonesian (Bahasa)</option>
+            <option value="de">German (Deutsch)</option>
+            <option value="ja">Japanese (日本語)</option>
+            <option value="mr">Marathi (मराठी)</option>
+            <option value="te">Telugu (తెలుగు)</option>
+            <option value="tr">Turkish (Türkçe)</option>
+            <option value="ta">Tamil (தமிழ்)</option>
+            <option value="ko">Korean (한국어)</option>
+            <option value="vi">Vietnamese (Tiếng Việt)</option>
+            <option value="it">Italian (Italiano)</option>
+            <option value="gu">Gujarati (ગુજરાતી)</option>
+            <option value="pl">Polish (Polski)</option>
+            <option value="uk">Ukrainian (Українська)</option>
+            <option value="kn">Kannada (ಕನ್ನಡ)</option>
+            <option value="ml">Malayalam (മലയാളം)</option>
+            <option value="fa">Persian (فارسی)</option>
+            <option value="th">Thai (ไทย)</option>
+            <option value="nl">Dutch (Nederlands)</option>
+            <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+            <option value="sw">Swahili (Kiswahili)</option>
+          </select>
+        </div>
       </div>
 
-      <textarea id="source-text" placeholder="Type or paste text to translate..."></textarea>
+      <textarea id="source-text" class="clay-input" placeholder="Type, paste, or speak text to translate..."></textarea>
 
       <div class="panel-footer">
-        <button id="mic-btn" class="btn btn-secondary">🎤 Speak</button>
-        <button id="translate-btn" class="btn">Translate</button>
+        <button id="mic-btn" class="clay-btn btn-action" title="Speech Input">
+          <span>🎤</span> Speak
+        </button>
+        <button id="translate-btn" class="clay-btn btn-primary">
+          <span>⚡</span> Translate
+        </button>
       </div>
     </section>
 
-    <!-- Output Panel (Right) -->
-    <section class="panel output-panel">
+    <!-- Target / Output Panel -->
+    <section class="clay-card panel">
       <div class="panel-header">
         <span class="panel-title">Translation</span>
-        <select id="target-lang">
-          <option value="hi">Hindi</option>
-          <option value="es">Spanish</option>
-          <option value="en">English</option>
-        </select>
+        <div class="select-wrapper">
+          <select id="target-lang" class="clay-select">
+            <option value="hi" selected>Hindi (हिन्दी)</option>
+            <option value="en">English</option>
+            <option value="es">Spanish (Español)</option>
+            <option value="zh">Chinese (Mandarin)</option>
+            <option value="ar">Arabic (العربية)</option>
+            <option value="fr">French (Français)</option>
+            <option value="bn">Bengali (বাংলা)</option>
+            <option value="pt">Portuguese (Português)</option>
+            <option value="ru">Russian (Русский)</option>
+            <option value="ur">Urdu (اردو)</option>
+            <option value="id">Indonesian (Bahasa)</option>
+            <option value="de">German (Deutsch)</option>
+            <option value="ja">Japanese (日本語)</option>
+            <option value="mr">Marathi (मराठी)</option>
+            <option value="te">Telugu (తెలుగు)</option>
+            <option value="tr">Turkish (Türkçe)</option>
+            <option value="ta">Tamil (தமிழ்)</option>
+            <option value="ko">Korean (한국어)</option>
+            <option value="vi">Vietnamese (Tiếng Việt)</option>
+            <option value="it">Italian (Italiano)</option>
+            <option value="gu">Gujarati (ગુજરાતી)</option>
+            <option value="pl">Polish (Polski)</option>
+            <option value="uk">Ukrainian (Українська)</option>
+            <option value="kn">Kannada (ಕನ್ನಡ)</option>
+            <option value="ml">Malayalam (മലയാളം)</option>
+            <option value="fa">Persian (فارسی)</option>
+            <option value="th">Thai (ไทย)</option>
+            <option value="nl">Dutch (Nederlands)</option>
+            <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+            <option value="sw">Swahili (Kiswahili)</option>
+          </select>
+        </div>
       </div>
 
-      <div id="output-text" class="output-box">Translation will appear here...</div>
+      <div id="output-text" class="clay-input output-box">Translation will appear here...</div>
 
       <div class="panel-footer">
-        <button id="listen-btn" class="btn btn-secondary">🔊 Listen</button>
-        <button id="copy-btn" class="btn btn-secondary">📋 Copy</button>
+        <button id="listen-btn" class="clay-btn btn-action" title="Listen Translation">
+          <span>🔊</span> Listen
+        </button>
+        <button id="copy-btn" class="clay-btn btn-action" title="Copy Translation">
+          <span>📋</span> Copy
+        </button>
       </div>
     </section>
+
   </main>
 
   <script src="app.js"></script>
